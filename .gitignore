@@ -39,3 +39,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ignore data files (in order to avoid sensitive data)
+*.csv

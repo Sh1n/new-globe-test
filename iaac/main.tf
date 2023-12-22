@@ -36,13 +36,15 @@ resource "google_project" "default" {
 # ====================================================== #
 
 resource "google_storage_bucket" "data-lake" {
+  depends_on = [ google_project.default ]
+  project = google_project.default.project_id
   name = var.randomize_project_id ? "${substr("data-lake-bucket", 0, 21)}-${random_id.project.hex}" : "data-lake-bucket"
   location      = var.location
   force_destroy = true
   uniform_bucket_level_access = true
-    # I like to set different policy retention to the objects in order to optimize costs. These are just examples of policies:
-    # Days:             [-inf], -361    | [-360, -91]   |   [-90, -31]  | [-30, 0]
-    # StorageClass:     ARCHIVE         | COLDLINE      |   NEARLINE    | Standard
+  # I like to set different policy retention to the objects in order to optimize costs. These are just examples of policies:
+  # Days:             [-inf], -361    | [-360, -91]   |   [-90, -31]  | [-30, 0]
+  # StorageClass:     ARCHIVE         | COLDLINE      |   NEARLINE    | Standard
   lifecycle_rule {
     condition {
       age = 31 # Days

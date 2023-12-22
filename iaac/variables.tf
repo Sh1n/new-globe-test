@@ -38,8 +38,8 @@ variable "zone" {
 }
 variable "location" {
   type        = string
-  description = "The location to create the project in"
-  default     = "europe-west"
+  description = "The location to create the bucket in"
+  default     = "EU"
   nullable    = false
 }
 

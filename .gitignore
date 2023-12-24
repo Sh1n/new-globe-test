@@ -42,3 +42,7 @@ terraform.rc
 
 # Ignore data files (in order to avoid sensitive data)
 *.csv
+
+# Ignore credentials output, made for the sake of the project
+output.vars
+storage_service_account.json

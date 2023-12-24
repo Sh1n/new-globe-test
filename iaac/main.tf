@@ -36,6 +36,9 @@ resource "google_project" "default" {
 # ====================================================== #
 
 resource "google_storage_bucket" "data-lake" {
+  depends_on = [ 
+    google_project.default
+  ]
   project = google_project.default.project_id
   name = var.randomize_project_id ? "${substr("data-lake-bucket", 0, 21)}-${random_id.project.hex}" : "data-lake-bucket"
   location      = var.location
@@ -83,4 +86,14 @@ resource "google_service_account" "dl_staging_service_account" {
 resource "google_service_account_key" "dl_staging_service_account" {
   service_account_id = google_service_account.dl_staging_service_account.name
   public_key_type    = "TYPE_X509_PEM_FILE"
+}
+# For the sake of simplicity we create a (not so) basic ACL
+resource "google_storage_bucket_iam_member" "bucket_A" {
+  bucket = google_storage_bucket.data-lake.name
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:${google_service_account.dl_staging_service_account.email}"
+  depends_on = [
+    google_storage_bucket.data-lake,
+    google_service_account.dl_staging_service_account
+  ]
 }

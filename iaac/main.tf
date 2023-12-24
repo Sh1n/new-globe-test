@@ -36,7 +36,6 @@ resource "google_project" "default" {
 # ====================================================== #
 
 resource "google_storage_bucket" "data-lake" {
-  depends_on = [ google_project.default ]
   project = google_project.default.project_id
   name = var.randomize_project_id ? "${substr("data-lake-bucket", 0, 21)}-${random_id.project.hex}" : "data-lake-bucket"
   location      = var.location
@@ -74,4 +73,14 @@ resource "google_storage_bucket" "data-lake" {
       storage_class = "ARCHIVE"
     }
   }
+}
+# I like to create scoped service account for read/write to the data lake
+resource "google_service_account" "dl_staging_service_account" {
+  project = google_project.default.project_id
+  account_id   = "data-lake-ingestion"
+  display_name = "Data Lake Ingestion"
+}
+resource "google_service_account_key" "dl_staging_service_account" {
+  service_account_id = google_service_account.dl_staging_service_account.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
 }

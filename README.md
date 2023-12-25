@@ -38,4 +38,5 @@ Install DBT core with:
 python3 -m venv dbt-env
 source dbt-env/bin/activate
 python -m pip install dbt-bigquery
+dbt --version
 ```

@@ -56,3 +56,41 @@ variable "project_service_account_name" {
   default     = "Iaac Automation"
   nullable    = false
 }
+
+variable "environment" {
+  type = string
+  description = "Which environment this provisioning is running for ?"
+  default = "dev"
+  nullable = false
+}
+
+
+variable "datasets_configuration" {
+  type = map(object({
+    name = string
+    location = string
+    tables = list(object({
+      name = string
+      pattern = string
+    }))
+  }))
+  description = "The configuration of the datasets to be shared between DL and DWH"
+  default = {
+    test_dataset: {
+      name: "Test Dataset",
+      location: "EU",
+      tables: [
+        # We assume all data are staged in the root of the DL, and that the filenames might contain some date reference
+        # BQ does not support multiple asterisk in the pattern
+        {
+          name: "pupil_data",
+          pattern: "PupilData*.csv"
+        },
+        {
+          name: "pupil_attendance",
+          pattern: "PupilAttendance*.csv"
+        },
+      ]
+    }
+  }
+}

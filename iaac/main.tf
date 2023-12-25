@@ -34,7 +34,6 @@ resource "google_project" "default" {
 # ====================================================== #
 #   Section 2: Set up data lake
 # ====================================================== #
-
 resource "google_storage_bucket" "data-lake" {
   depends_on = [ 
     google_project.default
@@ -96,4 +95,60 @@ resource "google_storage_bucket_iam_member" "bucket_A" {
     google_storage_bucket.data-lake,
     google_service_account.dl_staging_service_account
   ]
+}
+
+
+# ====================================================== #
+#   Section 3: Set up DWH
+# ====================================================== #
+resource "google_project_service" "project" {
+  project = google_project.default.project_id
+  service = "bigquery.googleapis.com"
+
+  timeouts {
+    create = "30m"
+    update = "40m"
+  }
+}
+
+locals {
+  
+
+  # Do not alter after this. Is used to transform a human readable config into a terraform one!
+  bg_tables = flatten([
+    for ds_key, ds_config in var.datasets_configuration : [
+      for table in ds_config.tables : {
+        table_id: table.name,
+        dataset_id: ds_key,
+        pattern: table.pattern
+      }
+    ]
+  ])
+}
+
+resource "google_bigquery_dataset" "dataset" {
+  for_each = var.datasets_configuration
+  project = google_project.default.project_id
+  dataset_id                  = each.key
+  friendly_name               = each.value.name
+  location                    = each.value.location
+  default_table_expiration_ms = 3600000 * 24 * 365 # 1 year
+  
+
+  labels = {
+    env = var.environment
+  }
+}
+
+resource "google_bigquery_table" "default" {
+  for_each = {for i,v in local.bg_tables: i => v}
+  project = google_project.default.project_id
+  dataset_id = google_bigquery_dataset.dataset[each.value.dataset_id].dataset_id
+  table_id   = each.value.table_id
+  deletion_protection         = false
+  external_data_configuration {
+    autodetect    = true
+    source_format = "CSV"
+    source_uris = ["gs://${google_storage_bucket.data-lake.name}/${each.value.pattern}"]
+  }
 }

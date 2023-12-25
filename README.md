@@ -31,3 +31,11 @@ Stage data to the data lake for ingestion, move the files to the data folder in 
 cd data
 ./stage_data.sh
 ```
+
+## DBT
+Install DBT core with:
+```
+python3 -m venv dbt-env
+source dbt-env/bin/activate
+python -m pip install dbt-bigquery
+```

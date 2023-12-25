@@ -76,8 +76,8 @@ variable "datasets_configuration" {
   }))
   description = "The configuration of the datasets to be shared between DL and DWH"
   default = {
-    test_dataset: {
-      name: "Test Dataset",
+    exercise_dataset: {
+      name: "Exercise Dataset",
       location: "EU",
       tables: [
         # We assume all data are staged in the root of the DL, and that the filenames might contain some date reference

@@ -1,0 +1,45 @@
+version: 1
+
+sources:
+  - name: pupils
+    description: This is where the pupils data is staged thanks to the pupils mesh team!
+    database: "{{env_var('PROJECT_ID')}}"
+    schema: "{{ env_var('BQ_DATASET') }}"
+    tables:
+      - name: pupil_attendance
+        description: >
+          One record per combination of <day, pupil_id>.
+        columns:
+          - name: Date
+            description: Date of the observation
+            tests:
+              - not_null
+          - name: PupilID
+            description: Identifier of the pupil
+            tests:
+              - not_null
+          - name: Attendance
+            description: Attendance status of the pupil (Present or Absent)
+            tests:
+              - not_null
+
+      - name: pupil_data
+        description: >
+          One record per combination of <day, pupil_id>, where the day is the observation date
+        columns:
+          - name: SnapshotDate
+          - name: AcademyName
+          - name: PupilID
+            description: Identifier of the pupil
+            tests:
+              - not_null
+          - name: FirstName
+          - name: MiddleName
+          - name: LastName
+          - name: Status
+          - name: GradeId
+          - name: GradeName
+          - name: Stream
+
+
+          

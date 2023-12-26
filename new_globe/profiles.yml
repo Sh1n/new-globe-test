@@ -1,0 +1,14 @@
+new_globe:
+  outputs:
+    dev:
+      dataset: "{{ env_var('BQ_DATASET') }}"
+      location: "{{ env_var('BQ_LOCATION') }}"
+      project: "{{ env_var('PROJECT_ID') }}"
+      keyfile: "{{ env_var('BQ_GSA_KEY_FILE') }}"
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      method: service-account
+      priority: interactive
+      threads: 4
+      type: bigquery
+  target: dev

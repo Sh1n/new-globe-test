@@ -79,7 +79,7 @@ resource "google_storage_bucket" "data-lake" {
 # I like to create scoped service account for read/write to the data lake
 resource "google_service_account" "dl_staging_service_account" {
   project = google_project.default.project_id
-  account_id   = "data-lake-ingestion"
+  account_id   = "data-lake-ingestion-${lower(var.environment)}"
   display_name = "Data Lake Ingestion"
 }
 resource "google_service_account_key" "dl_staging_service_account" {
@@ -151,4 +151,14 @@ resource "google_bigquery_table" "default" {
     source_format = "CSV"
     source_uris = ["gs://${google_storage_bucket.data-lake.name}/${each.value.pattern}"]
   }
+}
+
+resource "google_service_account" "dwh_dbt_service_account" {
+  project = google_project.default.project_id
+  account_id   = "dwh-dbt-${lower(var.environment)}"
+  display_name = "DWH DBT ${upper(var.environment)}"
+}
+resource "google_service_account_key" "dwh_dbt_service_account" {
+  service_account_id = google_service_account.dwh_dbt_service_account.name
+  public_key_type    = "TYPE_X509_PEM_FILE"
 }

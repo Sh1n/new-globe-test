@@ -46,3 +46,4 @@ terraform.rc
 # Ignore credentials output, made for the sake of the project
 output.vars
 storage_service_account.json
+dwh_service_account.json

@@ -11,4 +11,7 @@ new_globe:
       priority: interactive
       threads: 4
       type: bigquery
+      # If a query would bill more than a gigabyte of data, then
+      # BigQuery will reject the query (safety for the sake of the test)
+      maximum_bytes_billed: 1000000000
   target: dev

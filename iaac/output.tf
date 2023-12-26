@@ -13,3 +13,8 @@ resource "local_file" "storage_service_account" {
   filename = "../storage_service_account.json"
   content = base64decode(google_service_account_key.dl_staging_service_account.private_key)
 }
+
+resource "local_file" "dwh_service_account" {
+  filename = "../dwh_service_account.json"
+  content = base64decode(google_service_account_key.dwh_dbt_service_account.private_key)
+}

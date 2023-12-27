@@ -22,6 +22,8 @@ sources:
             description: Attendance status of the pupil (Present or Absent)
             tests:
               - not_null
+              - accepted_values:
+                  values: ['Present', 'Absent']
 
       - name: pupil_data
         description: >

@@ -162,3 +162,40 @@ resource "google_service_account_key" "dwh_dbt_service_account" {
   service_account_id = google_service_account.dwh_dbt_service_account.name
   public_key_type    = "TYPE_X509_PEM_FILE"
 }
+
+resource "google_bigquery_dataset_iam_member" "editor" {
+  for_each = var.datasets_configuration
+  project = google_project.default.project_id
+  dataset_id = google_bigquery_dataset.dataset[each.key].dataset_id
+  role       = "roles/bigquery.admin"
+  member = "serviceAccount:${google_service_account.dwh_dbt_service_account.email}"
+  depends_on = [
+    google_bigquery_dataset.dataset,
+    google_service_account.dwh_dbt_service_account
+  ]
+}
+
+# DBT might require to create bigquery jobs not associated to the dataset itself
+# for this reason we do force the role at project level too.
+resource "google_project_iam_member" "editor" {
+  for_each = var.datasets_configuration
+  project = google_project.default.project_id
+  role       = "roles/bigquery.user"
+  member = "serviceAccount:${google_service_account.dwh_dbt_service_account.email}"
+  depends_on = [
+    google_service_account.dwh_dbt_service_account
+  ]
+}
+
+# Since the dbt source layer reads directly from the files, we do also need to associate the Storage Object Viewer role to
+# the running service account
+resource "google_storage_bucket_iam_member" "dbt_bucket_access" {
+  bucket = google_storage_bucket.data-lake.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.dwh_dbt_service_account.email}"
+  depends_on = [
+    google_storage_bucket.data-lake,
+    google_service_account.dwh_dbt_service_account
+  ]
+}
+

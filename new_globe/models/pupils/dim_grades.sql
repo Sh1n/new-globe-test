@@ -6,10 +6,10 @@
 
 WITH sourced AS (
     SELECT
-        GradeId AS grade_id,
-        GradeName AS grade_name,
-        ROW_NUMBER() OVER (PARTITION BY GradeId ORDER BY SnapshotDate DESC) as rn
-    FROM {{ source('pupils', 'pupil_data') }}
+        grade_id,
+        grade_name,
+        ROW_NUMBER() OVER (PARTITION BY grade_id ORDER BY date DESC) as rn
+    FROM {{ ref('stg_pupil_data') }}
     WHERE
         1 = 1
 )

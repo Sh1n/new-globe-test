@@ -21,11 +21,11 @@
 WITH cleaned AS (
     SELECT 
         DISTINCT
-        PupilID AS pupil_id,
-        INITCAP(TRIM(REPLACE(FirstName, '.', ''))) AS first_name,
-        INITCAP(TRIM(REPLACE(MiddleName, '.', ''))) AS middle_name,
-        INITCAP(TRIM(REPLACE(LastName, '.', ''))) AS last_name
-    FROM {{ source('pupils', 'pupil_data') }}
+        pupil_id,
+        first_name,
+        middle_name,
+        last_name
+    FROM {{ ref('stg_pupil_data') }}
     WHERE 1 = 1
 ),
 

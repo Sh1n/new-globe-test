@@ -8,8 +8,8 @@
 WITH sourced AS (
     SELECT
         DISTINCT
-        SPLIT(AcademyName, '-')[0] AS academy_name
-    FROM {{ source('pupils', 'pupil_data') }}
+        academy_name
+    FROM {{ ref('stg_pupil_data') }}
     WHERE
         1 = 1
 )

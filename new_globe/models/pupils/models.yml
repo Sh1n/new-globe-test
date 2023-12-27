@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: fct_pupil_daily_attendance
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - pupil_id
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: pupil_id
+        tests:
+          - not_null
+      - name: is_present
+        tests:
+          - not_null
+
+  - name: fct_pupil
+    columns:
+      - name: pupil_id
+        tests:
+          - unique
+      - name: first_name
+      - name: middle_name
+      - name: last_name
+  - name: dim_academies
+    columns:
+      - name: academy_name
+        tests:
+          - unique
+
+  - name: dim_grades
+    columns:
+      - name: grade_id
+        tests:
+          - unique
+      - name: grade_name
+        tests:
+          - not_null
+          - unique

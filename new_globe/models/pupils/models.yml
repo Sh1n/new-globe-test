@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: dim_grades
+    columns:
+      - name: grade_id
+        tests:
+          - unique
+      - name: grade_name
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_academies
+    columns:
+      - name: academy_name
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_pupils
+    columns:
+      - name: pupil_id
+        tests:
+          - not_null
+          - unique
+      - name: first_name
+        tests:
+          - not_null
+      - name: middle_name
+      - name: last_name
+        tests:
+          - not_null
+
+  - name: fct_pupil_daily_attendance
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - pupil_id
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: pupil_id
+        tests:
+          - not_null
+      - name: is_present
+        tests:
+          - not_null
+
+  - name: fct_pupil_academy_status
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - pupil_key
+    columns:
+      - name: date
+        tests:
+          - not_null
+      - name: pupil_key
+        tests:
+          - not_null
+      - name: academy_key
+        tests:
+          - not_null
+      - name: grade_key
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+
+
+

@@ -199,3 +199,37 @@ resource "google_storage_bucket_iam_member" "dbt_bucket_access" {
   ]
 }
 
+
+# ====================================================== #
+#   Section 3: Set up bucket for DBT docs publishing
+# ====================================================== #
+resource "google_storage_bucket" "dbt-docs" {
+  depends_on = [ 
+    google_project.default
+  ]
+  project = google_project.default.project_id
+  name = var.randomize_project_id ? "${substr("dbt-docs-bucket", 0, 21)}-${random_id.project.hex}" : "dbt-docs-bucket"
+  location      = var.location
+  force_destroy = true
+
+  website {
+    main_page_suffix = "index.html"
+  }
+}
+
+# We assume the bucket can be accessed by everyone.
+resource "google_storage_bucket_access_control" "public_rule" {
+  bucket = google_storage_bucket.dbt-docs.id
+  role   = "READER"
+  entity = "allUsers"
+}
+
+resource "google_storage_bucket_iam_member" "dbt_docs_bucket_access" {
+  bucket = google_storage_bucket.dbt-docs.name
+  role   = "roles/storage.objectCreator"
+  member = "serviceAccount:${google_service_account.dwh_dbt_service_account.email}"
+  depends_on = [
+    google_storage_bucket.dbt-docs,
+    google_service_account.dwh_dbt_service_account
+  ]
+}

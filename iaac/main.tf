@@ -211,6 +211,7 @@ resource "google_storage_bucket" "dbt-docs" {
   name = var.randomize_project_id ? "${substr("dbt-docs-bucket", 0, 21)}-${random_id.project.hex}" : "dbt-docs-bucket"
   location      = var.location
   force_destroy = true
+  storage_class = "STANDARD"
 
   website {
     main_page_suffix = "index.html"
@@ -218,10 +219,14 @@ resource "google_storage_bucket" "dbt-docs" {
 }
 
 # We assume the bucket can be accessed by everyone.
-resource "google_storage_bucket_access_control" "public_rule" {
-  bucket = google_storage_bucket.dbt-docs.id
-  role   = "READER"
-  entity = "allUsers"
+resource "google_storage_bucket_iam_member" "public_rule" {
+  bucket = google_storage_bucket.dbt-docs.name
+  role   = "roles/storage.objectViewer"
+  member = "allUsers"
+  depends_on = [
+    google_storage_bucket.dbt-docs,
+    google_service_account.dwh_dbt_service_account
+  ]
 }
 
 resource "google_storage_bucket_iam_member" "dbt_docs_bucket_access" {

@@ -23,5 +23,5 @@ resource "local_file" "dwh_service_account" {
 }
 
 output "docs_website_url" {
-  value = "https://storage.googleapis.com/${google_storage_bucket.dbt-docs.name}/"
+  value = "https://storage.googleapis.com/${google_storage_bucket.dbt-docs.name}/index.html"
 }

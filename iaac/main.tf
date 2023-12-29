@@ -231,7 +231,7 @@ resource "google_storage_bucket_iam_member" "public_rule" {
 
 resource "google_storage_bucket_iam_member" "dbt_docs_bucket_access" {
   bucket = google_storage_bucket.dbt-docs.name
-  role   = "roles/storage.objectCreator"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.dwh_dbt_service_account.email}"
   depends_on = [
     google_storage_bucket.dbt-docs,

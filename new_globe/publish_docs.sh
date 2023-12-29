@@ -5,6 +5,10 @@ BASE_FOLDER=$(dirname "$0")
 CONFIG_VARS_FILE=$BASE_FOLDER/../output.vars
 DBT_GSA_KEY_FILE=$BASE_FOLDER/../dwh_service_account.json
 
+# Configure the dataset here since the IAAC supports multiple of those
+BQ_DATASET="exercise_dataset"
+BQ_LOCATION="EU"
+
 if [ ! -f $CONFIG_VARS_FILE ]
 then
     echo "File does not exists, run IAAC provisioning first" >/dev/stderr
@@ -30,7 +34,14 @@ then
     exit 1
 fi
 
-echo "Staging data..."
+echo "Generating documentation"
+BQ_GSA_KEY_FILE=$DBT_GSA_KEY_FILE \
+DBT_PROFILES_DIR=$BASE_FOLDER \
+BQ_DATASET=$BQ_DATASET \
+BQ_LOCATION=$BQ_LOCATION \
+PROJECT_ID=$PROJECT_ID dbt docs generate
+
+echo "Uploading documentation..."
 echo "Uploading to $DOCS_BUCKET_NAME"
 
 

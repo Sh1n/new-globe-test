@@ -14,23 +14,26 @@
 
 WITH renamed AS (
     SELECT
+        -- We do use ANY_VALUE to remove duplicates in case of duplicated source files
+        -- Since each pupil can attend one academy at time, we do group on <Date, Pupil>
         SnapshotDate AS date,
         PupilID as pupil_id,
-        AcademyName AS academy_name,
-        FirstName AS first_name,
-        MiddleName AS middle_name,
-        LastName AS last_name,
-        Status AS status,
-        GradeId AS grade_id,
-        GradeName AS grade_name,
-        Stream AS stream
+        ANY_VALUE(AcademyName) AS academy_name,
+        ANY_VALUE(FirstName) AS first_name,
+        ANY_VALUE(MiddleName) AS middle_name,
+        ANY_VALUE(LastName) AS last_name,
+        ANY_VALUE(Status) AS status,
+        ANY_VALUE(GradeId) AS grade_id,
+        ANY_VALUE(GradeName) AS grade_name,
+        ANY_VALUE(Stream) AS stream
     FROM {{ source('pupils', 'pupil_data') }}
     WHERE
         1 = 1
-
     {% if is_incremental() %}
         AND SnapshotDate > (SELECT MAX(date) FROM {{ this }})
     {% endif %}
+    GROUP BY
+        1, 2
 ),
 
 cleaned AS (

@@ -8,7 +8,10 @@
             "field": "date",
             "data_type": "date",
             "granularity": "day"
-        }
+        },
+        post_hook=[
+            "DELETE FROM {{ this }} WHERE date < DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)"
+        ]
     )
 }}
 

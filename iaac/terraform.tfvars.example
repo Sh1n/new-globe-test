@@ -1,0 +1,5 @@
+billing_account_id = ""
+org_id = ""
+project_id = "new-globe-test"
+randomize_project_id = true
+project_name = "new-globe-test"
